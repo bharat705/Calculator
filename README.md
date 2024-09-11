@@ -39,16 +39,18 @@ The calculator will include the following capabilities:
 To set up the project on your local machine:
 
 1. Clone the repository:
-   \`\`\`bash
+
+   ```bash
    git clone https://github.com/bharat705/Calculator.git
-   \`\`\`
+   ```
 
 2. Navigate to the project folder:
-   \`\`\`bash
-   cd Calculator
-   \`\`\`
 
-3. Open the \`index.html\` file in your browser to start the calculator.
+   ```bash
+   cd Calculator
+   ```
+
+3. Open the `index.html` file in your browser to start the calculator.
 
 ## Credits
 
