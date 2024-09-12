@@ -50,6 +50,10 @@ body {
   padding: 10px;
 }
 
+#display-lower {
+  border-top: #111 solid 1px;
+}
+
 .buttons {
   display: flex;
   flex-wrap: wrap;
