@@ -18,14 +18,15 @@ const operations = {
   "-": subtract,
   "×": multiply,
   "÷": divide,
-  "%": modulus,
+  "mod": modulus,
   "^": power,
-  "√": sqrt,
 };
 
-const parentheses = {
-  "(": "(",
-  ")": ")",
+const singleOperations = {
+  "%": percentage,
+  "√": sqrt,
+  "+/-": plusOrMinus,
+  "!": factorial,
 };
 
 const controls = {
@@ -42,11 +43,41 @@ const buttons = document.querySelectorAll(".button");
 const upperDisplay = document.querySelector("#display-upper");
 const lowerDisplay = document.querySelector("#display-lower");
 
+lowerDisplay.value = "0";
+upperDisplay.value = "";
+
+// Function to handle number input
 function handleNumberInput(value) {
-  if (operator === "") {
-    firstNumber += value;
+  if (value === "π") {
+    // Handle π by multiplying it with the current number
+    if (operator === "") {
+      if (firstNumber === "") {
+        firstNumber = Math.PI.toString(); // Just π
+      } else {
+        firstNumber += "*" + Math.PI.toString(); // e.g., 3 * π
+      }
+    } else {
+      if (secondNumber === "") {
+        secondNumber = Math.PI.toString(); // Just π in the second number
+      } else {
+        secondNumber += "*" + Math.PI.toString(); // e.g., 3 * π in second number
+      }
+    }
   } else {
-    secondNumber += value;
+    // Prevent multiple decimals
+    if (
+      value === "." &&
+      (operator === "" ? firstNumber.includes(".") : secondNumber.includes("."))
+    ) {
+      return;
+    }
+
+    // Handle normal numbers
+    if (operator === "") {
+      firstNumber += value;
+    } else {
+      secondNumber += value;
+    }
   }
   showDisplay();
 }
@@ -61,6 +92,35 @@ function handleOperatorInput(value) {
   showDisplay();
 }
 
+function handleSingleOperatorInput(value) {
+  let result;
+  if (operator === "") {
+    // Unary operators applied to firstNumber
+    if (singleOperators[value]) {
+      result = singleOperators[value](firstNumber);
+      if (value === "!") {
+        upperDisplay.value = `${firstNumber}! = ${result}`;
+      } else if (value === "√") {
+        upperDisplay.value = `√(${firstNumber}) = ${result}`;
+      } else {
+        upperDisplay.value = `${value}(${firstNumber}) = ${result}`;
+      }
+      firstNumber = result.toString();
+    }
+  } else {
+    // Unary operators applied to secondNumber
+    if (singleOperators[value]) {
+      result = singleOperators[value](secondNumber);
+      secondNumber = result.toString();
+    }
+  }
+  showDisplay();
+}
+
+function handleControlInput(value) {
+  controls[value]();
+}
+
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
     const value = e.target.textContent;
@@ -69,10 +129,10 @@ buttons.forEach((button) => {
       handleNumberInput(value);
     } else if (operations[value]) {
       handleOperatorInput(value);
-    } else if (parentheses[value]) {
-      // Handle parentheses
+    } else if (singleOperations[value]) {
+      handleSingleOperatorInput(value);
     } else if (controls[value]) {
-      controls[value]();
+      handleControlInput(value);
     }
   });
 });
@@ -97,8 +157,30 @@ function modulus(num1, num2) {
   return parseFloat(num1) % parseFloat(num2);
 }
 
+function percentage(num1, num2) {
+  return (parseFloat(num1) * num2) / 100;
+}
+
 function power(base, exponent) {
   return Math.pow(parseFloat(base), parseFloat(exponent));
+}
+
+function sqrt(num) {
+  return Math.sqrt(parseFloat(num));
+}
+
+function plusOrMinus(num) {
+  return (parseFloat(num) * -1).toString();
+}
+
+function factorial(num) {
+  num = parseInt(num, 10);
+  if (num < 0) return "Error";
+  let result = 1;
+  for (let i = 1; i <= num; i++) {
+    result *= i;
+  }
+  return result;
 }
 
 function operate(num1, num2, operator) {
@@ -108,13 +190,19 @@ function operate(num1, num2, operator) {
 }
 
 function showDisplay() {
-  lowerDisplay.value = firstNumber + operator + secondNumber;
+  lowerDisplay.value = firstNumber + (operator ? " " + operator + " " : " ") + secondNumber;
 }
 
 function showResult() {
   const result = operate(firstNumber, secondNumber, operator);
   upperDisplay.value =
-    firstNumber + operator + secondNumber + " = " + result.toString();
+    firstNumber +
+    " " +
+    operator +
+    " " +
+    secondNumber +
+    " = " +
+    result.toString();
   // Reset firstNumber to result and prepare for the next operation
   firstNumber = result.toString();
   secondNumber = ""; // Clear secondNumber
@@ -126,15 +214,14 @@ function clear() {
   secondNumber = "";
   operator = "";
   upperDisplay.value = "";
-  lowerDisplay.value = "";
+  lowerDisplay.value = "0";
 }
 
 function equals() {
-  if ((firstNumber === "") | (secondNumber === "") | (operator === "")) {
-    return "Error";
+  if (firstNumber === "" || (operator === "" && secondNumber === "")) {
+    return;
   } else {
     showResult();
-    operator = "";
   }
 }
 
@@ -142,7 +229,7 @@ function backspace() {
   if (secondNumber !== "") {
     secondNumber = secondNumber.slice(0, -1);
   } else if (operator !== "") {
-    operator = operator.slice(0, -1);
+    operator = "";
   } else {
     firstNumber = firstNumber.slice(0, -1);
   }
