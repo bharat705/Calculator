@@ -53,14 +53,20 @@ function handleNumberInput(value) {
     if (operator === "") {
       if (firstNumber === "") {
         firstNumber = Math.PI.toString(); // Just π
+        upperDisplay.value = "π = " + firstNumber;
       } else {
-        firstNumber += "*" + Math.PI.toString(); // e.g., 3 * π
+        const temp = multiply(firstNumber, Math.PI.toString());
+        upperDisplay.value = firstNumber + "π = " + temp;
+        firstNumber = temp;
       }
     } else {
       if (secondNumber === "") {
         secondNumber = Math.PI.toString(); // Just π in the second number
+        upperDisplay.value = "π = " + secondNumber;
       } else {
-        secondNumber += "*" + Math.PI.toString(); // e.g., 3 * π in second number
+        const temp = multiply(secondNumber, Math.PI.toString());
+        upperDisplay.value = secondNumber + "π = " + temp;
+        secondNumber = temp;
       }
     }
   } else {
@@ -96,21 +102,32 @@ function handleSingleOperatorInput(value) {
   let result;
   if (operator === "") {
     // Unary operators applied to firstNumber
-    if (singleOperators[value]) {
-      result = singleOperators[value](firstNumber);
+    if (singleOperations[value]) {
+      result = singleOperations[value](firstNumber);
       if (value === "!") {
-        upperDisplay.value = `${firstNumber}! = ${result}`;
+        upperDisplay.value = firstNumber + "! = " + result;
       } else if (value === "√") {
-        upperDisplay.value = `√(${firstNumber}) = ${result}`;
-      } else {
-        upperDisplay.value = `${value}(${firstNumber}) = ${result}`;
+        upperDisplay.value = "√(" + firstNumber + ") =" + result;
+      } else if (value === "%") {
+        upperDisplay.value = firstNumber + "% = " + result;
+      } else if (value === "+/-") {
+        upperDisplay.value = "";
       }
       firstNumber = result.toString();
     }
   } else {
     // Unary operators applied to secondNumber
-    if (singleOperators[value]) {
-      result = singleOperators[value](secondNumber);
+    if (singleOperations[value]) {
+      result = singleOperations[value](secondNumber);
+      if (value === "!") {
+        upperDisplay.value = secondNumber + "! = " + result;
+      } else if (value === "√") {
+        upperDisplay.value = "√(" + secondNumber + ") =" + result;
+      } else if (value === "%") {
+        upperDisplay.value = secondNumber + "% = " + result;
+      } else if (value === "+/-") {
+        upperDisplay.value = "";
+      }
       secondNumber = result.toString();
     }
   }
@@ -157,8 +174,8 @@ function modulus(num1, num2) {
   return parseFloat(num1) % parseFloat(num2);
 }
 
-function percentage(num1, num2) {
-  return (parseFloat(num1) * num2) / 100;
+function percentage(num) {
+  return parseFloat(num) / 100;
 }
 
 function power(base, exponent) {
@@ -190,7 +207,8 @@ function operate(num1, num2, operator) {
 }
 
 function showDisplay() {
-  lowerDisplay.value = firstNumber + (operator ? " " + operator + " " : " ") + secondNumber;
+  lowerDisplay.value =
+    firstNumber + (operator ? " " + operator + " " : " ") + secondNumber;
 }
 
 function showResult() {
