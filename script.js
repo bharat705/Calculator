@@ -53,19 +53,21 @@ function handleNumberInput(value) {
     if (operator === "") {
       if (firstNumber === "") {
         firstNumber = Math.PI.toString(); // Just π
-        upperDisplay.value = "π = " + firstNumber;
+        upperDisplay.value = "π = " + roundToFixed(firstNumber);
       } else {
         const temp = multiply(firstNumber, Math.PI.toString());
-        upperDisplay.value = firstNumber + "π = " + temp;
+        upperDisplay.value =
+          roundToFixed(firstNumber) + "π = " + roundToFixed(temp);
         firstNumber = temp;
       }
     } else {
       if (secondNumber === "") {
         secondNumber = Math.PI.toString(); // Just π in the second number
-        upperDisplay.value = "π = " + secondNumber;
+        upperDisplay.value = "π = " + roundToFixed(secondNumber);
       } else {
         const temp = multiply(secondNumber, Math.PI.toString());
-        upperDisplay.value = secondNumber + "π = " + temp;
+        upperDisplay.value =
+          roundToFixed(secondNumber) + "π = " + roundToFixed(temp);
         secondNumber = temp;
       }
     }
@@ -89,45 +91,59 @@ function handleNumberInput(value) {
 }
 
 function handleOperatorInput(value) {
-  if (operator === "") {
+  if (firstNumber === "") {
+    return "";
+  } else if (operator === "") {
     operator = value;
+  } else if (secondNumber === "") {
+    operator = value;
+    console.log(operator);
   } else {
     showResult();
-    operator = value;
   }
   showDisplay();
 }
 
 function handleSingleOperatorInput(value) {
   let result;
-  if (operator === "") {
+  if (firstNumber === "") {
+    return "";
+  } else if (operator === "") {
     // Unary operators applied to firstNumber
     if (singleOperations[value]) {
       result = singleOperations[value](firstNumber);
+      result = roundToFixed(result); //Round the result
+
       if (value === "!") {
-        upperDisplay.value = firstNumber + "! = " + result;
+        upperDisplay.value =
+          roundToFixed(firstNumber) + "! = " + roundToFixed(result);
       } else if (value === "√") {
-        upperDisplay.value = "√(" + firstNumber + ") =" + result;
+        upperDisplay.value =
+          "√(" + roundToFixed(firstNumber) + ") =" + roundToFixed(result);
       } else if (value === "%") {
-        upperDisplay.value = firstNumber + "% = " + result;
-      } else if (value === "+/-") {
-        upperDisplay.value = "";
+        upperDisplay.value =
+          roundToFixed(firstNumber) + "% = " + roundToFixed(result);
       }
+
       firstNumber = result.toString();
     }
   } else {
     // Unary operators applied to secondNumber
     if (singleOperations[value]) {
       result = singleOperations[value](secondNumber);
+      result = roundToFixed(result); //Round the result
+
       if (value === "!") {
-        upperDisplay.value = secondNumber + "! = " + result;
+        upperDisplay.value =
+          roundToFixed(secondNumber) + "! = " + roundToFixed(result);
       } else if (value === "√") {
-        upperDisplay.value = "√(" + secondNumber + ") =" + result;
+        upperDisplay.value =
+          "√(" + roundToFixed(secondNumber) + ") =" + roundToFixed(result);
       } else if (value === "%") {
-        upperDisplay.value = secondNumber + "% = " + result;
-      } else if (value === "+/-") {
-        upperDisplay.value = "";
+        upperDisplay.value =
+          roundToFixed(secondNumber) + "% = " + roundToFixed(result);
       }
+
       secondNumber = result.toString();
     }
   }
@@ -208,23 +224,26 @@ function operate(num1, num2, operator) {
 
 function showDisplay() {
   lowerDisplay.value =
-    firstNumber + (operator ? " " + operator + " " : " ") + secondNumber;
+    roundToFixed(firstNumber) +
+    (operator ? " " + operator + " " : " ") +
+    roundToFixed(secondNumber);
 }
 
 function showResult() {
-  const result = operate(firstNumber, secondNumber, operator);
+  let result = operate(firstNumber, secondNumber, operator);
+  result = roundToFixed(result); //Round the result
   upperDisplay.value =
-    firstNumber +
+    roundToFixed(firstNumber) +
     " " +
     operator +
     " " +
-    secondNumber +
+    roundToFixed(secondNumber) +
     " = " +
     result.toString();
   // Reset firstNumber to result and prepare for the next operation
   firstNumber = result.toString();
   secondNumber = ""; // Clear secondNumber
-  lowerDisplay.value = firstNumber;
+  lowerDisplay.value = roundToFixed(firstNumber);
 }
 
 function clear() {
@@ -252,4 +271,11 @@ function backspace() {
     firstNumber = firstNumber.slice(0, -1);
   }
   showDisplay();
+}
+
+function roundToFixed(value, decimals = 9) {
+  if (isNaN(value) || value === "") return value; // Return original value if it's not a number
+  return parseFloat(value)
+    .toFixed(decimals)
+    .replace(/\.?0+$/, ""); // Remove trailing zeros
 }
