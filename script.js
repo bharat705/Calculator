@@ -79,7 +79,6 @@ function handleNumberInput(value) {
     ) {
       return;
     }
-
     // Handle normal numbers
     if (operator === "") {
       firstNumber += value;
@@ -247,9 +246,7 @@ function operate(num1, num2, operator) {
 
 function showDisplay() {
   lowerDisplay.value =
-    roundToFixed(firstNumber) +
-    (operator ? " " + operator + " " : " ") +
-    roundToFixed(secondNumber);
+    firstNumber + (operator ? " " + operator + " " : " ") + secondNumber;
 }
 
 function showResult() {
