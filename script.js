@@ -97,9 +97,9 @@ function handleOperatorInput(value) {
     operator = value;
   } else if (secondNumber === "") {
     operator = value;
-    console.log(operator);
   } else {
     showResult();
+    operator = value;
   }
   showDisplay();
 }
@@ -119,7 +119,7 @@ function handleSingleOperatorInput(value) {
           roundToFixed(firstNumber) + "! = " + roundToFixed(result);
       } else if (value === "√") {
         upperDisplay.value =
-          "√(" + roundToFixed(firstNumber) + ") =" + roundToFixed(result);
+          "√(" + roundToFixed(firstNumber) + ") = " + roundToFixed(result);
       } else if (value === "%") {
         upperDisplay.value =
           roundToFixed(firstNumber) + "% = " + roundToFixed(result);
@@ -127,6 +127,8 @@ function handleSingleOperatorInput(value) {
 
       firstNumber = result.toString();
     }
+  } else if (secondNumber === "") {
+    return "";
   } else {
     // Unary operators applied to secondNumber
     if (singleOperations[value]) {
@@ -183,6 +185,8 @@ function multiply(num1, num2) {
 }
 
 function divide(num1, num2) {
+  let result = parseFloat(num1) / parseFloat(num2);
+
   return parseFloat(num1) / parseFloat(num2);
 }
 
@@ -199,7 +203,14 @@ function power(base, exponent) {
 }
 
 function sqrt(num) {
-  return Math.sqrt(parseFloat(num));
+  const result = Math.sqrt(parseFloat(num));
+
+  // Handle negative square root (which results in NaN)
+  if (isNaN(result)) {
+    return "Error"; // Return 'Error' for invalid square roots
+  }
+
+  return result;
 }
 
 function plusOrMinus(num) {
@@ -217,9 +228,21 @@ function factorial(num) {
 }
 
 function operate(num1, num2, operator) {
+  let result;
   if (operations[operator]) {
-    return operations[operator](num1, num2);
+    result = operations[operator](num1, num2);
   }
+  // Handle division by Zero
+  if (result === Infinity || result === -Infinity) {
+    return "Error: Division by 0? Let’s not anger the math gods.";
+  }
+
+  // Handle invalid operations resulting in NaN
+  if (isNaN(result)) {
+    return "Error"; // Return 'Error' for invalid operations
+  }
+
+  return roundToFixed(result); // Round the result and return
 }
 
 function showDisplay() {
@@ -230,20 +253,21 @@ function showDisplay() {
 }
 
 function showResult() {
-  let result = operate(firstNumber, secondNumber, operator);
-  result = roundToFixed(result); //Round the result
-  upperDisplay.value =
-    roundToFixed(firstNumber) +
-    " " +
-    operator +
-    " " +
-    roundToFixed(secondNumber) +
-    " = " +
-    result.toString();
-  // Reset firstNumber to result and prepare for the next operation
-  firstNumber = result.toString();
+  const result = operate(firstNumber, secondNumber, operator);
+
+  if (
+    result === "Error: Division by 0? Let’s not anger the math gods." ||
+    result === "Error"
+  ) {
+    upperDisplay.value = result; // Display the error
+  } else {
+    upperDisplay.value =
+      firstNumber + " " + operator + " " + secondNumber + " = " + result;
+    firstNumber = result.toString(); // Store the result for future operations
+  }
+
   secondNumber = ""; // Clear secondNumber
-  lowerDisplay.value = roundToFixed(firstNumber);
+  lowerDisplay.value = firstNumber; // Update the lower display
 }
 
 function clear() {
@@ -255,7 +279,7 @@ function clear() {
 }
 
 function equals() {
-  if (firstNumber === "" || (operator === "" && secondNumber === "")) {
+  if (firstNumber === "" || operator === "" || secondNumber === "") {
     return;
   } else {
     showResult();
