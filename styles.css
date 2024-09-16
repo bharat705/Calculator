@@ -145,3 +145,44 @@ body {
 #equals:active {
   background-color: #c2185b; /* Even Darker Pink */
 }
+
+/* Styles for footer*/
+.footer {
+  width: 100%;
+  padding: 10px;
+  background-color: #1e2a38;
+  color: #ffffff;
+  text-align: center;
+  font-size: 0.9em;
+  border-top: 2px solid #00ffcc;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.name-link {
+  color: #00ffcc;
+  text-decoration: none;
+}
+
+.name-link:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  border-left: 2px solid #00ffcc;
+  height: 20px;
+}
+
+.github-icon img {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+}
