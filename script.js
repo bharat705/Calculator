@@ -266,6 +266,7 @@ function showResult() {
     firstNumber = result.toString(); // Store the result for future operations
   }
 
+  operator = ""; // Clear operator
   secondNumber = ""; // Clear secondNumber
   lowerDisplay.value = firstNumber; // Update the lower display
 }
@@ -295,6 +296,7 @@ function backspace() {
     firstNumber = firstNumber.slice(0, -1);
   }
   showDisplay();
+  lowerDisplay.value = "0";
 }
 
 function roundToFixed(value, decimals = 9) {
