@@ -20,6 +20,8 @@ const operations = {
   "÷": divide,
   "mod": modulus,
   "^": power,
+  "/": divide,
+  "*": multiply,
 };
 
 const singleOperations = {
@@ -33,6 +35,8 @@ const controls = {
   "AC": clear,
   "←": backspace,
   "=": equals,
+  "Enter": equals,
+  "Backspace": backspace,
 };
 
 let firstNumber = "";
@@ -169,6 +173,26 @@ buttons.forEach((button) => {
       handleControlInput(value);
     }
   });
+});
+
+// Function to handle keyboard input
+document.addEventListener("keydown", (e) => {
+  const key = e.key;
+
+  if (numbers[key]) {
+    handleNumberInput(key);
+  } else if (operations[key]) {
+    handleOperatorInput(key);
+  } else if (singleOperations[key]) {
+    handleSingleOperatorInput(key);
+  } else if (controls[key]) {
+    handleControlInput(key);
+  }
+
+  // Prevent default behavior for Enter (to avoid form submission in some contexts)
+  if (key === "Enter") {
+    e.preventDefault();
+  }
 });
 
 function add(num1, num2) {
