@@ -37,6 +37,7 @@ const controls = {
   "=": equals,
   "Enter": equals,
   "Backspace": backspace,
+  "c": clear,
 };
 
 let firstNumber = "";
