@@ -245,8 +245,12 @@ function operate(num1, num2, operator) {
 }
 
 function showDisplay() {
-  lowerDisplay.value =
-    firstNumber + (operator ? " " + operator + " " : " ") + secondNumber;
+  if (firstNumber === "") {
+    lowerDisplay.value = "0";
+  } else {
+    lowerDisplay.value =
+      firstNumber + (operator ? " " + operator + " " : " ") + secondNumber;
+  }
 }
 
 function showResult() {
@@ -293,7 +297,6 @@ function backspace() {
     firstNumber = firstNumber.slice(0, -1);
   }
   showDisplay();
-  lowerDisplay.value = "0";
 }
 
 function roundToFixed(value, decimals = 9) {
